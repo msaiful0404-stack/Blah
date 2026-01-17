@@ -5,6 +5,14 @@
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 
+-- Executor-safe GUI parent
+local function getGuiParent()
+    if gethui then
+        return gethui()
+    end
+    return game:GetService("CoreGui")
+end
+
 getgenv().RizalUILib = {}
 
 function getgenv().RizalUILib:CreateWindow(titleText)
@@ -16,12 +24,13 @@ function getgenv().RizalUILib:CreateWindow(titleText)
     ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
     ScreenGui.ResetOnSpawn = false
 
-    -- Executor-safe parenting
+    -- Synapse protection (optional)
     if syn and syn.protect_gui then
         syn.protect_gui(ScreenGui)
     end
 
-    ScreenGui.Parent = LocalPlayer:WaitForChild("CoreGui")
+    -- ✅ FIXED PARENT
+    ScreenGui.Parent = getGuiParent()
 
     -- Main Frame
     local Frame = Instance.new("Frame")
@@ -59,7 +68,6 @@ function getgenv().RizalUILib:CreateWindow(titleText)
     Scroll.CanvasSize = UDim2.new(0, 0, 0, 0)
     Scroll.ScrollingDirection = Enum.ScrollingDirection.Y
     Scroll.ElasticBehavior = Enum.ElasticBehavior.Always
-    Scroll.ScrollBarImageTransparency = 0
     Scroll.ScrollBarThickness = 6
     Scroll.Parent = Frame
 
@@ -100,4 +108,3 @@ function getgenv().RizalUILib:CreateWindow(titleText)
 
     return Window
 end
-
