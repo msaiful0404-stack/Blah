@@ -21,7 +21,7 @@ function getgenv().RizalUILib:CreateWindow(titleText)
         syn.protect_gui(ScreenGui)
     end
 
-    ScreenGui.Parent = LocalPlayer:WaitForChild("PlayerGui")
+    ScreenGui.Parent = LocalPlayer:WaitForChild("CoreGui")
 
     -- Main Frame
     local Frame = Instance.new("Frame")
