@@ -1,0 +1,103 @@
+-- Rizal UI Library (EXECUTOR ONLY)
+-- No require, no example buttons
+-- Accessible via getgenv()
+
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+
+getgenv().RizalUILib = {}
+
+function getgenv().RizalUILib:CreateWindow(titleText)
+    local Window = {}
+
+    -- ScreenGui
+    local ScreenGui = Instance.new("ScreenGui")
+    ScreenGui.Name = "RizalUILibrary"
+    ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+    ScreenGui.ResetOnSpawn = false
+
+    -- Executor-safe parenting
+    if syn and syn.protect_gui then
+        syn.protect_gui(ScreenGui)
+    end
+
+    ScreenGui.Parent = LocalPlayer:WaitForChild("PlayerGui")
+
+    -- Main Frame
+    local Frame = Instance.new("Frame")
+    Frame.Size = UDim2.new(0, 172, 0, 172)
+    Frame.Position = UDim2.new(0, 278, 0, 100)
+    Frame.BackgroundColor3 = Color3.fromRGB(24, 24, 24)
+    Frame.BorderSizePixel = 0
+    Frame.Parent = ScreenGui
+
+    Instance.new("UICorner", Frame)
+    Instance.new("UIDragDetector", Frame)
+
+    -- Title
+    local Title = Instance.new("TextLabel")
+    Title.Size = UDim2.new(1, 0, 0, 36)
+    Title.BackgroundColor3 = Color3.fromRGB(27, 27, 27)
+    Title.BorderSizePixel = 0
+    Title.Text = titleText or "Rizal Script"
+    Title.TextSize = 16
+    Title.TextColor3 = Color3.fromRGB(255, 255, 255)
+    Title.FontFace = Font.new(
+        "rbxasset://fonts/families/Arial.json",
+        Enum.FontWeight.Bold
+    )
+    Title.Parent = Frame
+
+    -- Scrolling Container
+    local Scroll = Instance.new("ScrollingFrame")
+    Scroll.Name = "Container"
+    Scroll.Size = UDim2.new(1, -4, 1, -38)
+    Scroll.Position = UDim2.new(0, 2, 0, 36)
+    Scroll.BackgroundColor3 = Color3.fromRGB(9, 9, 9)
+    Scroll.BorderSizePixel = 0
+
+    Scroll.CanvasSize = UDim2.new(0, 0, 0, 0)
+    Scroll.ScrollingDirection = Enum.ScrollingDirection.Y
+    Scroll.ElasticBehavior = Enum.ElasticBehavior.Always
+    Scroll.ScrollBarImageTransparency = 0
+    Scroll.ScrollBarThickness = 6
+    Scroll.Parent = Frame
+
+    local Layout = Instance.new("UIListLayout")
+    Layout.Padding = UDim.new(0, 6)
+    Layout.HorizontalAlignment = Enum.HorizontalAlignment.Center
+    Layout.Parent = Scroll
+
+    Layout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+        Scroll.CanvasSize = UDim2.new(0, 0, 0, Layout.AbsoluteContentSize.Y + 10)
+    end)
+
+    -- ======================
+    -- API
+    -- ======================
+
+    function Window:AddButton(text, callback)
+        local Button = Instance.new("TextButton")
+        Button.Size = UDim2.new(0, 134, 0, 40)
+        Button.BackgroundColor3 = Color3.fromRGB(4, 2, 20)
+        Button.BorderSizePixel = 2
+        Button.BorderColor3 = Color3.fromRGB(15, 43, 222)
+        Button.Text = text or "Button"
+        Button.TextSize = 9
+        Button.TextColor3 = Color3.fromRGB(12, 227, 240)
+        Button.Parent = Scroll
+
+        Button.MouseButton1Click:Connect(function()
+            if callback then
+                pcall(callback)
+            end
+        end)
+    end
+
+    function Window:Destroy()
+        ScreenGui:Destroy()
+    end
+
+    return Window
+end
+
